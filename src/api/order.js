@@ -138,6 +138,37 @@ export default (model, sequelize) => {
                           )
                         })
                         .then(() => {
+                          /* STEP 4 - reduce qty product */
+                          rp({
+                            method: 'POST',
+                            url: config.productURL + 'products/decrease',
+                            headers:{
+                              secretkey: config.secretkey
+                            },
+                            body: orderItems,
+                            json: true
+                          })
+                          .then((result) => {
+                            log(result);
+                          })
+
+                          /* STEP 5 - reduce limit code */
+                          rp({
+                            method: 'POST',
+                            url: config.productURL + 'coupons/reedem',
+                            headers:{
+                              secretkey: config.secretkey
+                            },
+                            body: {
+                              code: req.body.couponCode
+                            },
+                            json: true
+                          })
+                          .then((result) => {
+                            log(result);
+                          })
+
+                          // Send Response 
                           model.models.order.findOne({
                             where: {
                               id: newOrder.id,
@@ -175,9 +206,6 @@ export default (model, sequelize) => {
         res.status(400);
         res.json({error: "invalid data item"})
       });
-
-    /* STEP 4 - reduce qty product */
-    /* STEP 5 - reduce limit code */
   });
 
   return router;
