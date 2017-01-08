@@ -21,6 +21,10 @@ export default (Sequelize, sequelize, callback) => {
       phone: sequelize.STRING,
       email: sequelize.STRING,
       address: sequelize.STRING,
+    }),
+    Shipping: Sequelize.define('shipping', {
+      code: sequelize.STRING,
+      status: sequelize.STRING,
     })
   };
 
@@ -33,8 +37,13 @@ export default (Sequelize, sequelize, callback) => {
     as: 'buyer'
   });
 
+  models.Order.hasOne(models.Shipping, {
+    as: 'shipping'
+  });
+
   models.Buyer.belongsTo(models.Order);
   models.OrderItem.belongsTo(models.Order);
+  models.Shipping.belongsTo(models.Order);
 
   callback(Sequelize);
 }
