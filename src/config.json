@@ -1,3 +1,4 @@
 {
-  "prodructURL": "http://localhost:8080/"
+  "productURL": "http://localhost:8080/",
+  "secretkey": "x-om-telolet-om"
 }

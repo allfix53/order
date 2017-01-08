@@ -13,6 +13,7 @@
   "author": "alfi setyadi",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "debug": "^2.2.0",

@@ -15,9 +15,8 @@ const app = express();
 app.server = http.createServer(app);
 
 app.use(cors());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(bodyParser.json());
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "localhost");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -37,7 +36,7 @@ connectDb(
       models(db.sequelize, db.Sequelize, (model) => {
           db.sequelize
               .sync({
-                  force: true
+                  force: false
               })
               .then(() => {
                   log('Database scheme synced');

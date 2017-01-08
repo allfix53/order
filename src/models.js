@@ -1,10 +1,9 @@
 export default (Sequelize, sequelize, callback) => {
   const models = {
     Order:  Sequelize.define('order', {
-      couponId: sequelize.STRING(24),
+      couponCode: sequelize.STRING(24),
       amount: sequelize.INTEGER,
       total: sequelize.INTEGER,
-      date: sequelize.DATE,
       paymentProof: sequelize.STRING,
       status: {
         type: sequelize.INTEGER(1),
