@@ -36,7 +36,7 @@ connectDb(
       models(db.sequelize, db.Sequelize, (model) => {
           db.sequelize
               .sync({
-                  force: false
+                  force: true
               })
               .then(() => {
                   log('Database scheme synced');

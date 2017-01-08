@@ -10,9 +10,6 @@ export default (Sequelize, sequelize, callback) => {
         type: sequelize.INTEGER(1),
         defaultValue: 0,
       },
-    },{
-      updatedAt: 'last_update',
-      createdAt: 'date_of_creation',
     }),
     OrderItem: Sequelize.define('orderItem', {
       productId: sequelize.STRING(24),

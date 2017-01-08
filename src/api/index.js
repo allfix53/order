@@ -1,7 +1,7 @@
-import Router from 'express';
+import express from 'express';
 
 export default () => {
-  const router = Router();
+  const router = express();
 
   router.get('/ping', (req, res) => {
     String.prototype.toHHMMSS = function () {
