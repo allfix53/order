@@ -73,17 +73,23 @@ export default (model, sequelize) => {
             })
             .then((validationResponse) => {
               log(validationResponse)
-              if (validationResponse.valid == false){ // is coupon is invalid, expired or exceeds the limit
+              if (validationResponse.valid == false && req.body.couponCode != null){ // is coupon is invalid, expired or exceeds the limit
                 res.status(400);
                 res.json(validationResponse.message);
               } else {
                 let discount, total;
-                // counting value after discount
-                if(validationResponse.value.indexOf('%') >= 0){ // ? discount in percent ?
-                  discount = parseInt(validationResponse.value)/100 * amount;
-                  total = amount - discount;
+
+                // WITHOUT COUPON
+                if (req.body.couponCode == null) {
+                  total = amount;
                 } else {
-                  total = amount - validationResponse.value
+                // WITHIN COUPON
+                  if(validationResponse.value.indexOf('%') >= 0){ // ? discount in percent ?
+                    discount = parseInt(validationResponse.value)/100 * amount;
+                    total = amount - discount;
+                  } else {
+                    total = amount - validationResponse.value
+                  }
                 }
 
                 /* STEP 3 - Buyer data validation
