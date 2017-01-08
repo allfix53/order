@@ -1,4 +1,5 @@
 import express from 'express';
+import config from './../config.json';
 
 export default () => {
   const router = express();
