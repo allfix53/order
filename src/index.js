@@ -6,6 +6,7 @@ import models from './models';
 import debug from 'debug';
 import api from './api';
 import order from './api/order'
+import payment from './api/payment'
 import connectDb from './datasource';
 
 const error = debug('app:error');
@@ -46,6 +47,7 @@ connectDb(
               
           app.use('/', api(model, db.sequelize));
           app.use('/orders', order(model, db.sequelize));
+          app.use('/payments', payment(model, db.sequelize));
           app.server.listen(process.env.PORT || 8081);
           log(`Started on port ${app.server.address().port}`);
       });

@@ -4,7 +4,6 @@ export default (Sequelize, sequelize, callback) => {
       couponCode: sequelize.STRING(24),
       amount: sequelize.INTEGER,
       total: sequelize.INTEGER,
-      paymentProof: sequelize.STRING,
       status: {
         type: sequelize.INTEGER(1),
         defaultValue: 0,
@@ -25,6 +24,15 @@ export default (Sequelize, sequelize, callback) => {
       shippingID: sequelize.STRING,
       status: sequelize.STRING,
       courier: sequelize.STRING,
+    }),
+    Payment: Sequelize.define('payment', {
+      bankFrom: sequelize.STRING,
+      bankTo: sequelize.STRING,
+      accountHolder: sequelize.STRING,
+      transferDate: sequelize.DATE,
+      amount: sequelize.INTEGER,
+      attachment: sequelize.STRING,
+      memo: sequelize.STRING
     })
   };
 
@@ -41,9 +49,14 @@ export default (Sequelize, sequelize, callback) => {
     as: 'shipping'
   });
 
+   models.Order.hasMany(models.Payment, {
+    as: 'paymentProofs'
+  });
+
   models.Buyer.belongsTo(models.Order);
   models.OrderItem.belongsTo(models.Order);
   models.Shipping.belongsTo(models.Order);
+  models.Payment.belongsTo(models.Order);
 
   callback(Sequelize);
 }
