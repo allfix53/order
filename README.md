@@ -30,3 +30,41 @@ Menggunakan framework expressJs dan beberapa library diantaranya bluebird, mongo
 **ERD**
 
 ![Alt text](/erd.png?raw=true "erd")
+
+***Note***
+
+*shippings*
+- shippingID: sebagai parameter cek status pengiriman
+- status: status pengiriman
+- curier: logistic partner
+
+*buyers*
+- name: customer name
+- phone: customer phone
+- email: customer email
+- address: customer address
+
+*orders*
+- couponCode: kode kupon [set null geek order tanpa kupon]
+- amount: total keseluruhan belanja [sebelum diskon (jika apply coupon)]
+- total: total tagihan [total nilai belanja dikurangi dengan diskon sesuai coupon]
+- status: status order
+  0 status pembelian baru
+  1 status pembayaran sudah dikonfirmasi customer
+  2 order judah di approve admin dan siap proses
+  3 shipping
+  9 canceled by admin
+
+*orderItems*
+- productId: id product
+- qty: jumlah yang dibeli
+- amount: total untuk 1 product id ybs.
+
+*payments*
+- bankFrom: rekening pengirim
+- bankTo: rekening tujuan/perusahaan
+- accountHolder: nama pemilik rekening pengirim
+- transferData: tanggal transfer
+- amount: nilai yang ditransfer
+- attachemnt: url attachment
+- memo: catatan pengirim
