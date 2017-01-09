@@ -17,7 +17,7 @@ export default (model, sequelize) => {
           res.json({success: false, message: 'invalid id order'});
         } else {
           sequelize.transaction((t) => {
-            return model.models.payment.create(res.body, {transaction: t})
+            return model.models.payment.create(req.body, {transaction: t})
             .then((payment) =>{
               product.status = 1;
               return product.save({transaction: t})

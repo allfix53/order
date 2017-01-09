@@ -25,6 +25,10 @@ export default (model, sequelize) => {
         model: model.models.shipping,
         as: 'shipping',
         attributes: ['shippingID', 'status', 'courier']
+      }, {
+        model: model.models.payment,
+        as: 'paymentProofs',
+        attributes: ['accountHolder', 'bankFrom', 'bankTo', 'transferDate', 'amount', 'attachment', 'memo']
       }]
     })
     .then((resultOrder) => {
