@@ -233,17 +233,20 @@ export default (model, sequelize) => {
         if (product == null){
           res.status(400);
           res.json({success: false, message: 'invalid id order'});
-        } else if (product.status == 1){
+        } else if (product.status == 0){
           res.status(400);
-          res.json({success: false, message: 'order has approved / status 1'});
+          res.json({success: false, message: 'order payment not confirmed yet / status 0'});
         } else if (product.status == 2){
           res.status(400);
-          res.json({success: false, message: 'order has shipped / status 2'});
+          res.json({success: false, message: 'order has approved / status 2'});
+        } else if (product.status == 3){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 3'});
         } else if (product.status == 9){
           res.status(400);
-          res.json({success: false, message: 'order has canceled / status 9'});
-        } else if (product.status == 0){
-          product.status = 1;
+          res.json({success: false, message: 'order has calceled / status 9'});
+        } else if (product.status == 1){
+          product.status = 2;
           product.save()
             .then((result) => {
               res.status(200);
@@ -270,16 +273,16 @@ export default (model, sequelize) => {
         if (product == null){
           res.status(400);
           res.json({success: false, message: 'invalid id order'});
-        } else if (product.status == 1){
-          res.status(400);
-          res.json({success: false, message: 'order has approved / status 1'});
         } else if (product.status == 2){
           res.status(400);
-          res.json({success: false, message: 'order has shipped / status 2'});
+          res.json({success: false, message: 'order has approved / status 2'});
+        } else if (product.status == 3){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 3'});
         } else if (product.status == 9){
           res.status(400);
           res.json({success: false, message: 'order has canceled / status 9'});
-        } else if (product.status == 0){
+        } else if (product.status == 0 || product.status == 1){
           product.status = 9;
           product.save()
             .then((result) => {
@@ -309,16 +312,19 @@ export default (model, sequelize) => {
           res.json({success: false, message: 'invalid id order'});
         } else if (product.status == 0){
           res.status(400);
-          res.json({success: false, message: 'not yet approved / status 0'});
-        } else if (product.status == 2){
+          res.json({success: false, message: 'order payment not yet confirmed / status 0'});
+        } else if (product.status == 1){
           res.status(400);
-          res.json({success: false, message: 'order has shipped / status 2'});
+          res.json({success: false, message: 'order payment not yet approved / status 1'});
+        } else if (product.status == 3){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 3'});
         } else if (product.status == 9){
           res.status(400);
           res.json({success: false, message: 'order has canceled / status 9'});
         } else if (product.status == 1){
           sequelize.transaction( (t) => {
-            product.status = 2;
+            product.status = 3;
             return product.save({transaction: t})
               .then((shippedOrder) => {
                 return model.models.shipping.create({
@@ -365,8 +371,9 @@ export default (model, sequelize) => {
         } else {
           const cases = {
             0: 'new order / not yet approved',
-            1: 'approved / on packing process',
-            2: 'shipping via logistic partner',
+            1: 'waiting payment confirmation',
+            2: 'approved / on packing process',
+            3: 'shipping via logistic partner',
             9: 'canceled by ADMIN',
           }
           res.status(200);
