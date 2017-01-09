@@ -37,6 +37,97 @@ export default (model, sequelize) => {
     })
   });
 
+  // Apply coupon before submition
+  router.post('/apply-coupon', (req, res) => {
+    /* STEP 1 - Product items - validation */
+    if(req.body.items.length < 1){
+      res.status(400);
+      res.json({error: "invalid data item"})
+    } 
+
+    // prepare promisify ALL
+    let items = [];
+    req.body.items.forEach((item, count) => {
+      var getProduct = {
+        // request to inventory service - looping item
+        url: config.productURL + 'products/' + item.productId,
+        headers:{
+          secretkey: config.secretkey
+        },
+        json: true
+      };
+
+      items.push(rp(getProduct));
+    });
+
+    let orderItems = [];
+    let amount = 0;
+    promise.all(items)
+      .then((products) => {
+        // validation qty item order
+        products.forEach((product, count) => {
+          if (product.qty < req.body.items[count].qty) { // ? not enough stock
+            res.status(400);
+            res.json({
+              error: "invalid data item", 
+              message: "qty item " + product._id + " < " + req.body.items[count].qty
+            })
+            res.end();
+          }
+          else {
+            orderItems.push({
+              productId: product._id,
+              qty: parseInt(req.body.items[count].qty),
+              amount: parseInt(req.body.items[count].qty) * product.price,
+            })
+            // count amount
+            amount += parseInt(req.body.items[count].qty) * product.price;
+          }
+
+          // end of looping
+          if (products.length-1 == count){
+            /* STEP 2 - Coupon validation */
+            rp({ // request validation code from inventory service
+              url: config.productURL + 'coupons/validate/' + req.body.couponCode,
+              headers:{
+                secretkey: config.secretkey
+              },
+              json: true
+            })
+            .then((validationResponse) => {
+              log(validationResponse)
+              if (validationResponse.valid == false && req.body.couponCode != null){ // is coupon is invalid, expired or exceeds the limit
+                res.status(400);
+                res.json(validationResponse.message);
+              } else {
+                let discount, total;
+
+                // WITHOUT COUPON
+                if (req.body.couponCode == null) {
+                  total = amount;
+                } else {
+                // WITHIN COUPON
+                  if(validationResponse.value.indexOf('%') >= 0){ // ? discount in percent ?
+                    discount = parseInt(validationResponse.value)/100 * amount;
+                    total = amount - discount;
+                  } else {
+                    total = amount - validationResponse.value
+                  }
+                }
+
+                res.status(200);
+                res.json({
+                  message: 'applied',
+                  amount: amount,
+                  afterDiscount: total,
+                })
+              }
+            })
+          }
+        })
+      })
+  })
+
   // POST A NEW orders
   router.post('/new-order', (req, res) => {
     /* STEP 1 - Product items - validation */
