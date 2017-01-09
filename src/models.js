@@ -22,8 +22,9 @@ export default (Sequelize, sequelize, callback) => {
       address: sequelize.STRING,
     }),
     Shipping: Sequelize.define('shipping', {
-      code: sequelize.STRING,
+      shippingID: sequelize.STRING,
       status: sequelize.STRING,
+      courier: sequelize.STRING,
     })
   };
 

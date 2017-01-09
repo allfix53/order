@@ -24,7 +24,7 @@ export default (model, sequelize) => {
       }, {
         model: model.models.shipping,
         as: 'shipping',
-        attributes: ['code', 'status']
+        attributes: ['shippingID', 'status', 'courier']
       }]
     })
     .then((resultOrder) => {
@@ -296,6 +296,61 @@ export default (model, sequelize) => {
                 message: err,
               })
             })
+        }
+      })
+  });
+
+  // shipment status -> by ADMIN
+  router.post('/shipping', (req, res) => {
+    model.models.order.findById(req.body.id)
+      .then((product) => {
+        if (product == null){
+          res.status(400);
+          res.json({success: false, message: 'invalid id order'});
+        } else if (product.status == 0){
+          res.status(400);
+          res.json({success: false, message: 'not yet approved / status 0'});
+        } else if (product.status == 2){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 2'});
+        } else if (product.status == 9){
+          res.status(400);
+          res.json({success: false, message: 'order has canceled / status 9'});
+        } else if (product.status == 1){
+          sequelize.transaction( (t) => {
+            product.status = 2;
+            return product.save({transaction: t})
+              .then((shippedOrder) => {
+                return model.models.shipping.create({
+                  shippingID: req.body.shippingID,
+                  courier: req.body.courier,
+                  orderId: product.id,
+                  status: 'Manifest',
+                }, {transaction: t})
+              })
+              .then((result) => {
+                res.status(200);
+                res.json({
+                  success: true,
+                  message: result,
+                })
+              })
+              .catch((err) => {
+                res.status(500);
+                res.json({
+                  success: false,
+                  message: err,
+                })
+              });
+          })
+          .then((result) => {
+            res.status(200);
+            res.json(result);
+          })
+          .catch((err) => {
+            res.status(500);
+            res.json(err);
+          })
         }
       })
   });
