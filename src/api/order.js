@@ -12,7 +12,25 @@ export default (model, sequelize) => {
 
   // GET List orders -- BY ADMIN
   router.get('/', (req, res) => {
-
+    model.models.order.findAll({
+      include: [{
+        model: model.models.buyer,
+        as: 'buyer',
+        attributes: ['name', 'phone', 'email', 'address']
+      }, {
+        model: model.models.orderItem,
+        as: 'items',
+        attributes: ['productId', 'qty', 'amount']
+      }, {
+        model: model.models.shipping,
+        as: 'shipping',
+        attributes: ['code', 'status']
+      }]
+    })
+    .then((resultOrder) => {
+      res.status(200);
+      res.send(resultOrder);
+    })
   });
 
   // POST A NEW orders
@@ -206,6 +224,43 @@ export default (model, sequelize) => {
         res.status(400);
         res.json({error: "invalid data item"})
       });
+  });
+
+  // Approve order -> BY ADMIN
+  router.post('/approve', (req, res) => {
+    model.models.order.findById(req.body.id)
+      .then((product) => {
+        if (product == null){
+          res.status(400);
+          res.json({success: false, message: 'invalid id order'});
+        } else if (product.status == 1){
+          res.status(400);
+          res.json({success: false, message: 'order has approved / status 1'});
+        } else if (product.status == 2){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 2'});
+        } else if (product.status == 9){
+          res.status(400);
+          res.json({success: false, message: 'order has rejected / status 9'});
+        } else if (product.status == 0){
+          product.status = 1;
+          product.save()
+            .then((result) => {
+              res.status(200);
+              res.json({
+                success: true,
+                message: result,
+              })
+            })
+            .catch((err) => {
+              res.status(500);
+              res.json({
+                success: false,
+                message: err,
+              })
+            })
+        }
+      })
   });
 
   return router;
