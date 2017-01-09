@@ -22,3 +22,7 @@ Menggunakan framework expressJs dan beberapa library diantaranya bluebird, mongo
   5. Done
 
 ```npm run build``` will create dist directory and ready to deploy
+
+**ORDER FLOW**
+
+![Alt text](/flowcharts.png?raw=true "flowchart")
