@@ -126,6 +126,10 @@ export default (model, sequelize) => {
           }
         })
       })
+      .catch(err => { // if any invalid response from product - send error item
+        res.status(400);
+        res.json({error: "invalid data item"})
+      });
   })
 
   // POST A NEW orders
