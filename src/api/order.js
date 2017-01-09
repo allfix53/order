@@ -241,9 +241,46 @@ export default (model, sequelize) => {
           res.json({success: false, message: 'order has shipped / status 2'});
         } else if (product.status == 9){
           res.status(400);
-          res.json({success: false, message: 'order has rejected / status 9'});
+          res.json({success: false, message: 'order has canceled / status 9'});
         } else if (product.status == 0){
           product.status = 1;
+          product.save()
+            .then((result) => {
+              res.status(200);
+              res.json({
+                success: true,
+                message: result,
+              })
+            })
+            .catch((err) => {
+              res.status(500);
+              res.json({
+                success: false,
+                message: err,
+              })
+            })
+        }
+      })
+  });
+
+  // Cancel order -> by ADMIN
+  router.post('/cancel', (req, res) => {
+    model.models.order.findById(req.body.id)
+      .then((product) => {
+        if (product == null){
+          res.status(400);
+          res.json({success: false, message: 'invalid id order'});
+        } else if (product.status == 1){
+          res.status(400);
+          res.json({success: false, message: 'order has approved / status 1'});
+        } else if (product.status == 2){
+          res.status(400);
+          res.json({success: false, message: 'order has shipped / status 2'});
+        } else if (product.status == 9){
+          res.status(400);
+          res.json({success: false, message: 'order has canceled / status 9'});
+        } else if (product.status == 0){
+          product.status = 9;
           product.save()
             .then((result) => {
               res.status(200);
