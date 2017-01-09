@@ -26,3 +26,7 @@ Menggunakan framework expressJs dan beberapa library diantaranya bluebird, mongo
 **ORDER FLOW**
 
 ![Alt text](/flowcharts.png?raw=true "flowchart")
+
+**ERD**
+
+![Alt text](/erd.png?raw=true "erd")
