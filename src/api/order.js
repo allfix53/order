@@ -355,5 +355,55 @@ export default (model, sequelize) => {
       })
   });
 
+  // customer cek order status
+  router.get('/status/:id', (req, res) => {
+    model.models.order.findById(req.params.id)
+      .then((product) => {
+        if (product == null){
+          res.status(400);
+          res.json({message: "invalid id order"});
+        } else {
+          const cases = {
+            0: 'new order / not yet approved',
+            1: 'approved / on packing process',
+            2: 'shipping via logistic partner',
+            9: 'canceled by ADMIN',
+          }
+          res.status(200);
+          res.json({ status: cases[product.status] });
+        }
+      })
+      .catch((err) => {
+        res.status(500);
+        res.json(err);
+      })
+  });
+
+  // customer cek shipment status
+  router.get('/shipping/status/:shippingID', (req, res) => {
+    model.models.shipping.findOne({
+      where:{
+        shippingID: req.params.shippingID
+      }
+    })
+      .then((shipping) => {
+        if (shipping == null){
+          res.status(400);
+          res.json({message: "invalid shippingID"});
+        } else {
+          res.status(200);
+          res.json({ 
+            shippingID: shipping.shippingID,
+            status: shipping.status,
+            courier: shipping.courier
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500);
+        res.json(err);
+      })
+  });
+
   return router;
 };
