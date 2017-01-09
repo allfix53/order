@@ -25,6 +25,8 @@ Menggunakan framework expressJs dan beberapa library diantaranya bluebird, mongo
 
 **ORDER FLOW**
 
+*note: coupon dapat di apply sebelum submition, namun pada saat submit tetap dilakukan validation*
+
 ![Alt text](/flowcharts.png?raw=true "flowchart")
 
 **ERD**
